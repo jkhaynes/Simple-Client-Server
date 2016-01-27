@@ -38,59 +38,59 @@ int main(){
   // Bind address struct to socket
   bind(welcomeSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
 
-  // Listen to socket
-  if(listen(welcomeSocket,5)==0)
-    printf("Listening\n");
-  else
-    printf("Error\n");
+  while(1){
+    // Listen to socket
+    if(listen(welcomeSocket,5)==0)
+      printf("Listening\n");
+    else
+      printf("Error\n");
 
-  // Accept call creates a new socket for the incoming connection
-  addr_size = sizeof serverStorage;
-  newSocket = accept(welcomeSocket, (struct sockaddr *) &serverStorage, &addr_size);
+    // Accept call creates a new socket for the incoming connection
+    addr_size = sizeof serverStorage;
+    newSocket = accept(welcomeSocket, (struct sockaddr *) &serverStorage, &addr_size);
 
-  int num;
+    int num;
 
-  //Recieve message from client
-  if ((num = recv(newSocket, bufferMes, MAX_SIZE,0))== -1) {
+    //Recieve message from client
+    if ((num = recv(newSocket, bufferMes, MAX_SIZE,0))== -1) {
+          perror("recv");
+          exit(1);
+    }   
+    else if (num == 0) {
+          printf("Connection closed\n");
+          return 0;
+    }
+    //bufferMes[num] = '\0';
+
+    //Recieve sig from client
+    if ((num = recv(newSocket, bufferSig, MAX_SIZE,0))== -1) {
         perror("recv");
         exit(1);
-  }   
-  else if (num == 0) {
+    }   
+    else if (num == 0) {
         printf("Connection closed\n");
         return 0;
-  }
-  //bufferMes[num] = '\0';
-  printf("Message received: %s\n", bufferMes);
+    }
+    //bufferSig[num] = '\0';
 
-  //Recieve sig from client
-  if ((num = recv(newSocket, bufferSig, MAX_SIZE,0))== -1) {
-        perror("recv");
-        exit(1);
-  }   
-  else if (num == 0) {
-        printf("Connection closed\n");
-        return 0;
-  }
-  //bufferSig[num] = '\0';
-  printf("Signature received: %s\n", bufferSig);
+    hash(bufferMes, bufferHash);
+    decryption(bufferSig, KEY, bufferHash2);
 
-  hash(bufferMes, bufferHash);
-  decryption(bufferSig, KEY, bufferHash2);
-
-  char *toSend;
-  if(strcmp(bufferHash, bufferHash2) == 0)
+    char *toSend;
+    if(strcmp(bufferHash, bufferHash2) == 0)
       toSend = "True\n" + '\0';
-  else
+    else
       toSend = "False\n" + '\0';
 
-  // Send message to client
-  if((send(newSocket,toSend,strlen(toSend),0)) == -1) {
-    fprintf(stderr, "Failure Sending Message\n");
-    close(newSocket);
-    exit(1);
+    // Send message to client
+    if((send(newSocket,toSend,strlen(toSend),0)) == -1) {
+      fprintf(stderr, "Failure Sending Message\n");
+      close(newSocket);
+      exit(1);
+    }
   }
 
-
-  //close(newSocket);
+  printf("Closed\n");
+  close(newSocket);
   return 0;
 }

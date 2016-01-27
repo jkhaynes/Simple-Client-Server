@@ -47,9 +47,6 @@ int main(){
         close(clientSocket);
         exit(1);
   }
-  else {
-        fprintf(stdout, "Message being sent: %s",bufferMes);
-  }
 
   fflush(stdout);
 
@@ -61,9 +58,6 @@ int main(){
         fprintf(stderr, "Failure Sending Signature\n");
         close(clientSocket);
         exit(1);
-  }
-  else {
-        fprintf(stdout, "Signature being sent: %s\n",bufferSig);
   }
 
   fflush(stdout);
