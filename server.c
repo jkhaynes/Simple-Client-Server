@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #define KEY 3
-#define MAX_SIZE 256
+#define MAX_SIZE 1028
 
 int main(){
   int welcomeSocket, newSocket;
@@ -51,7 +51,7 @@ int main(){
   int num;
 
   //Recieve message from client
-  if ((num = recv(newSocket, bufferMes, MAX_SIZE-1,0))== -1) {
+  if ((num = recv(newSocket, bufferMes, MAX_SIZE,0))== -1) {
         perror("recv");
         exit(1);
   }   
@@ -59,11 +59,11 @@ int main(){
         printf("Connection closed\n");
         return 0;
   }
-  bufferMes[num] = '\0';
+  //bufferMes[num] = '\0';
   printf("Message received: %s\n", bufferMes);
 
   //Recieve sig from client
-  if ((num = recv(newSocket, bufferSig, MAX_SIZE-1,0))== -1) {
+  if ((num = recv(newSocket, bufferSig, MAX_SIZE,0))== -1) {
         perror("recv");
         exit(1);
   }   
@@ -84,13 +84,13 @@ int main(){
       toSend = "False\n" + '\0';
 
   // Send message to client
-  //strcpy(bufferOut,"Hello World\n");
   if((send(newSocket,toSend,strlen(toSend),0)) == -1) {
     fprintf(stderr, "Failure Sending Message\n");
     close(newSocket);
     exit(1);
   }
 
-  close(newSocket);
+
+  //close(newSocket);
   return 0;
 }

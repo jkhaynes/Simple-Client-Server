@@ -10,7 +10,7 @@
 #include <unistd.h>
 
 #define KEY 3
-#define MAX_SIZE 256
+#define MAX_SIZE 1028
 
 int main(){
   int clientSocket;
@@ -41,34 +41,38 @@ int main(){
   //Write message to server
   printf("Please enter the message: ");
   fgets(bufferMes, MAX_SIZE-1, stdin);
-  if ((send(clientSocket,bufferMes,strlen(bufferMes),0))== -1) {
+
+  if ((send(clientSocket,bufferMes,MAX_SIZE,0))== -1) {
         fprintf(stderr, "Failure Sending Message\n");
         close(clientSocket);
         exit(1);
   }
   else {
-        printf("Message being sent: %s",bufferMes);
+        fprintf(stdout, "Message being sent: %s",bufferMes);
   }
+
+  fflush(stdout);
 
   hash(bufferMes, bufferHash);
   encryption(bufferHash, KEY, bufferSig);
 
   //Send signature to server
-  //strcpy(bufferSig, "Test sig");
-  if ((send(clientSocket,bufferSig,strlen(bufferSig),0))== -1) {
+  if ((send(clientSocket,bufferSig,MAX_SIZE,0))== -1) {
         fprintf(stderr, "Failure Sending Signature\n");
         close(clientSocket);
         exit(1);
   }
   else {
-        printf("Signature being sent: %s",bufferSig);
+        fprintf(stdout, "Signature being sent: %s\n",bufferSig);
   }
 
+  fflush(stdout);
+
   // Read message from server into buffer
-  recv(clientSocket, bufferIn, 10, 0);
+  recv(clientSocket, bufferIn, MAX_SIZE-1, 0);
 
   // Print received message
-  printf("Data received: %s", bufferIn);   
+  fprintf(stdout, "Data received: %s", bufferIn);  
 
   return 0;
 }
