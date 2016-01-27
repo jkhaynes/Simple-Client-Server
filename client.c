@@ -5,15 +5,19 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 #define KEY 3
+#define MAX_SIZE 256
 
 int main(){
   int clientSocket;
-  char bufferIn[256];
-  char bufferMes[1024];
-  char bufferHash[256];
-  char bufferSig[256];
+  char bufferIn[MAX_SIZE];
+  char bufferMes[MAX_SIZE];
+  char bufferHash[MAX_SIZE];
+  char bufferSig[MAX_SIZE];
   struct sockaddr_in serverAddr;
   socklen_t addr_size;
 
@@ -36,7 +40,7 @@ int main(){
 
   //Write message to server
   printf("Please enter the message: ");
-  fgets(bufferMes, 1023, stdin);
+  fgets(bufferMes, MAX_SIZE-1, stdin);
   if ((send(clientSocket,bufferMes,strlen(bufferMes),0))== -1) {
         fprintf(stderr, "Failure Sending Message\n");
         close(clientSocket);
@@ -60,13 +64,11 @@ int main(){
         printf("Signature being sent: %s",bufferSig);
   }
 
-  clear(bufferIn);
-
   // Read message from server into buffer
-  recv(clientSocket, bufferIn, 255, 0);
+  recv(clientSocket, bufferIn, 10, 0);
 
   // Print received message
-  printf("Data received: %s",bufferIn);   
+  printf("Data received: %s", bufferIn);   
 
   return 0;
 }

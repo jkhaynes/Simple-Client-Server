@@ -1,5 +1,8 @@
 #include "util.h"
 
+#include <stdio.h>
+#include <string.h>
+
 #define N 255
 
 void clear(char* arr){
@@ -21,7 +24,7 @@ void hash(char* message, char* output)
  
 }
 
-void encryption(char message[], int key, char output[])
+void encryption(char* message, int key, char* output)
 {
 	clear(output);
 
@@ -31,7 +34,7 @@ void encryption(char message[], int key, char output[])
 	output[N] = '\0';
 }
 
-void decryption(char message[], int key, char output[])
+void decryption(char* message, int key, char* output)
 {
 	encryption(message, -key, output);
 }

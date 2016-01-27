@@ -4,14 +4,20 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+#define KEY 3
+#define MAX_SIZE 256
 
 int main(){
   int welcomeSocket, newSocket;
-  char bufferMes[1024];
-  char bufferHash[256];
-  char bufferHash2[256];
-  char bufferSig[256];
-  char bufferOut[1024];
+  char bufferMes[MAX_SIZE];
+  char bufferHash[MAX_SIZE];
+  char bufferHash2[MAX_SIZE];
+  char bufferSig[MAX_SIZE];
+  char bufferOut[MAX_SIZE];
   struct sockaddr_in serverAddr;
   struct sockaddr_storage serverStorage;
   socklen_t addr_size;
@@ -45,7 +51,7 @@ int main(){
   int num;
 
   //Recieve message from client
-  if ((num = recv(newSocket, bufferMes, 1023,0))== -1) {
+  if ((num = recv(newSocket, bufferMes, MAX_SIZE-1,0))== -1) {
         perror("recv");
         exit(1);
   }   
@@ -57,7 +63,7 @@ int main(){
   printf("Message received: %s\n", bufferMes);
 
   //Recieve sig from client
-  if ((num = recv(newSocket, bufferSig, 255,0))== -1) {
+  if ((num = recv(newSocket, bufferSig, MAX_SIZE-1,0))== -1) {
         perror("recv");
         exit(1);
   }   
@@ -65,21 +71,21 @@ int main(){
         printf("Connection closed\n");
         return 0;
   }
-  bufferSig[num] = '\0';
+  //bufferSig[num] = '\0';
   printf("Signature received: %s\n", bufferSig);
 
   hash(bufferMes, bufferHash);
-  decryption(bufferSig, 3, bufferHash2);
+  decryption(bufferSig, KEY, bufferHash2);
 
   char *toSend;
   if(strcmp(bufferHash, bufferHash2) == 0)
-      bufferOut[0] = "True\n";
+      toSend = "True\n" + '\0';
   else
-      bufferOut[0] = "False\n";
+      toSend = "False\n" + '\0';
 
   // Send message to client
   //strcpy(bufferOut,"Hello World\n");
-  if((send(newSocket,bufferOut,strlen(bufferOut),0)) == -1) {
+  if((send(newSocket,toSend,strlen(toSend),0)) == -1) {
     fprintf(stderr, "Failure Sending Message\n");
     close(newSocket);
     exit(1);
