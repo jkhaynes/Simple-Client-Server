@@ -27,18 +27,19 @@ int main(){
   welcomeSocket = socket(PF_INET, SOCK_STREAM, 0);
   
   /*---- Configure settings of the server address struct ----*/
-  /* Address family = Internet */
+  // Address family = Internet
   serverAddr.sin_family = AF_INET;
-  /* Set port number, using htons function to use proper byte order */
+  // Set port number, using htons function to use proper byte order 
   serverAddr.sin_port = htons(9876);
-  /* Set IP address to localhost */
+  // Set IP address to localhost 
   serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-  /* Set all bits of the padding field to 0 */
+  // Set all bits of the padding field to 0 
   memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);  
 
   // Bind address struct to socket
   bind(welcomeSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
 
+  //Keeps server running until manual shut down, so multiple instances of client can be ran
   while(1){
     // Listen to socket
     if(listen(welcomeSocket,5)==0)
@@ -72,14 +73,21 @@ int main(){
         return 0;
     }
 
+    //Hash the orignal message
     hash(bufferMes, bufferHash);
+    //decrypted the signature
     decryption(bufferSig, KEY, bufferHash2);
 
-    char *toSend;
+    //check if hash + decryption are equal or not
+    char toSend[MAX_SIZE];
+    clear(toSend);
+
     if(strcmp(bufferHash, bufferHash2) == 0)
-      toSend = "True\n" + '\0';
+      strcpy(toSend, "True\n");
     else
-      toSend = "False\n" + '\0';
+      strcpy(toSend, "False\n");
+
+    toSend[MAX_SIZE] = '\0';
 
     // Send message to client
     if((send(newSocket,toSend,strlen(toSend),0)) == -1) {
