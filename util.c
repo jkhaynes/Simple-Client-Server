@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define N 255
+#define N 256
 
 void clear(char* arr){
 	int i;
@@ -29,8 +29,10 @@ void encryption(char* message, int key, char* output)
 	clear(output);
 
 	int i = 0;
-	while (i < strlen(message)-1)
-		output[i] = message[i++] + key;
+	while (i < strlen(message)-1){
+		output[i] = message[i] + key;
+		i++;
+	}
 	output[N] = '\0';
 }
 

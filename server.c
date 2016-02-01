@@ -10,13 +10,14 @@
 
 #define KEY 3
 #define MAX_SIZE 1028
+#define HASH_SIZE 256
 
 int main(){
   int welcomeSocket, newSocket;
   char bufferMes[MAX_SIZE];
-  char bufferHash[MAX_SIZE];
-  char bufferHash2[MAX_SIZE];
-  char bufferSig[MAX_SIZE];
+  char bufferHash[HASH_SIZE];
+  char bufferHash2[HASH_SIZE];
+  char bufferSig[HASH_SIZE];
   char bufferOut[MAX_SIZE];
   struct sockaddr_in serverAddr;
   struct sockaddr_storage serverStorage;
@@ -60,7 +61,6 @@ int main(){
           printf("Connection closed\n");
           return 0;
     }
-    //bufferMes[num] = '\0';
 
     //Recieve sig from client
     if ((num = recv(newSocket, bufferSig, MAX_SIZE,0))== -1) {
@@ -71,7 +71,6 @@ int main(){
         printf("Connection closed\n");
         return 0;
     }
-    //bufferSig[num] = '\0';
 
     hash(bufferMes, bufferHash);
     decryption(bufferSig, KEY, bufferHash2);

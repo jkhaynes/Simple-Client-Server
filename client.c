@@ -11,13 +11,14 @@
 
 #define KEY 3
 #define MAX_SIZE 1028
+#define HASH_SIZE 256
 
 int main(){
   int clientSocket;
   char bufferIn[MAX_SIZE];
   char bufferMes[MAX_SIZE];
-  char bufferHash[MAX_SIZE];
-  char bufferSig[MAX_SIZE];
+  char bufferHash[HASH_SIZE];
+  char bufferSig[HASH_SIZE];
   struct sockaddr_in serverAddr;
   socklen_t addr_size;
 
@@ -48,8 +49,6 @@ int main(){
         exit(1);
   }
 
-  fflush(stdout);
-
   hash(bufferMes, bufferHash);
   encryption(bufferHash, KEY, bufferSig);
 
@@ -59,8 +58,6 @@ int main(){
         close(clientSocket);
         exit(1);
   }
-
-  fflush(stdout);
 
   // Read message from server into buffer
   recv(clientSocket, bufferIn, MAX_SIZE-1, 0);
